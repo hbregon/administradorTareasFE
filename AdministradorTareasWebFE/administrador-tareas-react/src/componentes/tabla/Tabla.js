@@ -31,21 +31,27 @@ function Tabla() {
     ];
 
     const [resultado, setResultado] = useState([]);
-    obtenerListaTareas()
-    .then((respuestaTareas) => {
-        obtenerListaColaboradores()
-        .then((respuestaColaboradores) => {
-            for (let index = 0; index < respuestaTareas.length; index++) {
-                for (let index2 = 0; index2 < respuestaColaboradores.length; index2++) {
-                    if (respuestaTareas[index].idColaborador === respuestaColaboradores[index2].idColaborador) {
-                        respuestaTareas[index].nombreColaborador = respuestaColaboradores[index].nombre
+    useEffect(() =>{
+        const timer = setInterval(() =>{
+            obtenerListaTareas()
+        .then((respuestaTareas) => {
+            obtenerListaColaboradores()
+                .then((respuestaColaboradores) => {
+                    for (let index = 0; index < respuestaTareas.length; index++) {
+                        for (let index2 = 0; index2 < respuestaColaboradores.length; index2++) {
+                            if (respuestaTareas[index].idColaborador === respuestaColaboradores[index2].idColaborador) 
+                            {
+                                respuestaTareas[index].nombreColaborador = respuestaColaboradores[index].nombre
+                            }
+                        }
                     }
-                }
-            }
-            setResultado(respuestaTareas)
+                    setResultado(respuestaTareas)
+                })
+                .catch((error) => console.log(error))
         })
-        .catch((error) => console.log(error))
-    })
+        }, 8000);
+    }, [])
+    
 
     return (
         <div>
@@ -69,7 +75,7 @@ function obtenerListaColaboradores() {
             .then((colaboradores) => {
                 resuelta(colaboradores.respuesta);
             })
-            .catch((error) => rechazada(error));
+            .catch((error) => rechazada(error))
         }, []);
 }
 
@@ -82,7 +88,7 @@ function obtenerListaTareas() {
         .then((tareas) => {
             resuelta(tareas.respuesta);
         })
-        .catch((error) => rechazada(error));
+        .catch((error) => rechazada(error))
     }, []);
 }
 
