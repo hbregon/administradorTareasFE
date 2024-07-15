@@ -41,7 +41,7 @@ function Tabla() {
                         for (let index2 = 0; index2 < respuestaColaboradores.length; index2++) {
                             if (respuestaTareas[index].idColaborador === respuestaColaboradores[index2].idColaborador) 
                             {
-                                respuestaTareas[index].nombreColaborador = respuestaColaboradores[index].nombre
+                                respuestaTareas[index].nombreColaborador = respuestaColaboradores[index2].nombre
                             }
                         }
                     }
