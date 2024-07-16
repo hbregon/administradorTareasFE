@@ -53,8 +53,6 @@ function Tabla() {
     { value: 3, label: "BAJA" },
   ];
 
-  const [filasFiltradas, setFilasFiltradas] = useState(listaColaboradores);
-
   const [resultado, setResultado] = useState([]);
   useEffect(() => {
     obtenerListaTareas().then((respuestaTareas) => {
@@ -86,6 +84,16 @@ function Tabla() {
     });
   }, []);
 
+
+  const [filasFiltradas, setFilasFiltradas] = useState(resultado);
+
+  function manejadorFiltro(evento) {
+    const nuevoResultado = resultado.filter(fila  => {
+        return fila.colaborador.includes(evento.target.value);
+    });
+    setFilasFiltradas(nuevoResultado);
+  }
+
   return (
     <div>
       <div>
@@ -95,27 +103,27 @@ function Tabla() {
           name="colaborador"
           options={listaColaboradores}
           placeholder="Seleccione un colaborador"
-          onChange={(option) => setOpcionSeleccionadaColaborador(option.label)}
+          onChange={(option) => manejadorFiltro(option)}
         />
         <Select
           id="selectEstado"
           name="estado"
           options={listaEstados}
           placeholder="Seleccione un estado"
-          onChange={(opcion) => setOpcionSeleccionadaEstado(opcion.label)}
+          onChange={(opcion) => manejadorFiltro(opcion)}
         />
         <Select
           id="selectPrioridad"
           name="prioridad"
           options={listaPrioridades}
           placeholder="Seleccione una prioridad"
-          onChange={(opcion) => setOpcionSeleccionadaPrioridad(opcion.label)}
+          onChange={(opcion) => manejadorFiltro(opcion)}
         />
       </div>
       <DataTable
         columns={columnas}
         noDataComponent="Cargando datos"
-        data={resultado}
+        data={filasFiltradas}
         title="Lista de Tareas"
         defaultSortAsc={5}
         selectableRows
@@ -164,10 +172,6 @@ function manejadorSeleccionFila(opciones) {
     document.body.appendChild(div);
     console.log(div.value);
   }
-}
-
-function manejadorFiltro() {
-
 }
 
 export default Tabla;
