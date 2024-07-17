@@ -1,20 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, FormValues } from "react";
 import "./AgregarModificarTarea.css";
 import { Formik, Form, Field, ErrorMessage, isNaN } from "formik";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "semantic-ui-css/semantic.min.css";
 
 function AgregarModificarTarea() {
   const [tipoAccion, setTipoAccion] = useState("");
   const divIdTarea = document.getElementById("idTarea");
-  const divSelectEstado = document.getElementsByClassName("css-1dimb5e-singleValue");
+  const divSelectEstado = document.getElementsByClassName(
+    "css-1dimb5e-singleValue"
+  );
   if (divIdTarea !== null && tipoAccion === "Modificar") {
     setearValoresForm("Modificar");
   } else {
     setearValoresForm("Agregar");
   }
-
 
   const [listaColaboradores, setlistaColaboradores] = useState("none");
   const [opcionSeleccionadaColaborador, setOpcionSeleccionadaColaborador] =
@@ -23,7 +25,9 @@ function AgregarModificarTarea() {
     useState("none");
   const [opcionSeleccionadaPrioridad, setOpcionSeleccionadaPrioridad] =
     useState("none");
-  const [fechaInicioSeleccionada, setFechaInicioSeleccionada] = useState(new Date());
+  const [fechaInicioSeleccionada, setFechaInicioSeleccionada] = useState(
+    new Date()
+  );
   const [fechaFinSeleccionada, setFechaFinSeleccionada] = useState(new Date());
 
   useEffect(() => {
@@ -52,13 +56,28 @@ function AgregarModificarTarea() {
     { value: 3, label: "BAJA" },
   ];
 
-  const valoresIniciales : React.FormValues = {
-    descripcion: divIdTarea !== null ? divIdTarea.value.descripcion : "",
-    colaborador: divIdTarea !== null ?  document.getElementById("selectColaborador").childNodes[3].value = divIdTarea.value.nombreColaborador : "",
-    estado: divIdTarea !== null && document.getElementsByClassName(" css-1dimb5e-singleValue").childNodes !== undefined ?  document.getElementsByClassName(" css-1dimb5e-singleValue").childNodes[0].innerText = divIdTarea.value.estado : "",
-    fechaInicio: divIdTarea !== null ?  divIdTarea.value.fechaInicio : "",
-    fechaFin: divIdTarea !== null ?  divIdTarea.value.fechaFin : "",
-    nota: divIdTarea !== null ?  divIdTarea.value.nota : ""
+  const valoresIniciales = {
+    descripcion:
+      divIdTarea !== null && tipoAccion === "Modificar"
+        ? divIdTarea.value.descripcion
+        : "",
+    colaborador:
+      divIdTarea !== null && tipoAccion === "Modificar"
+        ? (document.getElementById("selectColaborador").childNodes[3].value =
+            divIdTarea.value.nombreColaborador)
+        : 0,
+    fechaInicio:
+      divIdTarea !== null && tipoAccion === "Modificar"
+        ? divIdTarea.value.fechaInicio
+        : "",
+    fechaFin:
+      divIdTarea !== null && tipoAccion === "Modificar"
+        ? divIdTarea.value.fechaFin
+        : "",
+    nota:
+      divIdTarea !== null && tipoAccion === "Modificar"
+        ? divIdTarea.value.nota
+        : "",
   };
 
   return (
@@ -70,6 +89,7 @@ function AgregarModificarTarea() {
             class="btn btn-success"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
+            id="botonAgregar"
             onClick={() => setTipoAccion("Agregar")}
           >
             Agregar Tarea
@@ -81,6 +101,7 @@ function AgregarModificarTarea() {
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
+            id="botonModificar"
             onClick={() => setTipoAccion("Modificar")}
           >
             Modificar Tarea
@@ -109,7 +130,7 @@ function AgregarModificarTarea() {
               ></button>
             </div>
             <Formik
-            enableReinitialize={true}
+              enableReinitialize={true}
               initialValues={valoresIniciales}
               validate={(valores) => {
                 let errores = {};
@@ -120,7 +141,7 @@ function AgregarModificarTarea() {
                   document.getElementById("selectEstado").childNodes[3]
                     .value !== "" &&
                   document.getElementById("selectEstado").childNodes[3]
-                    .value !== 1 &&
+                    .value !== "1" &&
                   document.getElementById("selectColaborador").childNodes[3]
                     .value === ""
                 ) {
@@ -146,7 +167,7 @@ function AgregarModificarTarea() {
                 }
                 return errores;
               }}
-              onSubmit={(valores, { setSubmitting }) => { 
+              onSubmit={(valores, { setSubmitting }) => {
                 manejadorGuardarTarea(
                   valores,
                   opcionSeleccionadaColaborador,
@@ -367,7 +388,11 @@ function manejadorGuardarTarea(
     opcionSeleccionadaColaborador === "" ||
     opcionSeleccionadaColaborador === "none"
   ) {
-    opcionSeleccionadaColaborador = 0;
+    if (tipoAccionParam === "Agregar") {
+      opcionSeleccionadaColaborador = 0;
+    } else {
+      opcionSeleccionadaColaborador = null;
+    }
   }
   if (opcionSeleccionadaEstado === "" || opcionSeleccionadaEstado === "none") {
     opcionSeleccionadaEstado = "PENDIENTE";
@@ -391,11 +416,15 @@ function manejadorGuardarTarea(
         idColaborador: opcionSeleccionadaColaborador,
         nota: nota,
       }),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     }).then((respuesta) => {
       respuesta.json();
+      if (respuesta.status === 200 || respuesta.status === 201) {
+        alert("Formulario validado y se envio correctamente");
+      } else {
+        console.log(respuesta);
+      }
       window.location.reload(true);
-      alert("Formulario validado y se envio correctamente");
     });
   } else {
     fetch("https://administadortareasapi.azurewebsites.net/api/Tarea/Editar", {
@@ -410,12 +439,12 @@ function manejadorGuardarTarea(
         idColaborador: opcionSeleccionadaColaborador,
         nota: nota,
       }),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     }).then((respuesta) => {
       respuesta.json();
       if (respuesta.status === 200) {
-        window.location.reload(true);
         alert("Se modificó la tarea correctamente");
+        eliminarDiv(divIdTareaParam);
       }
     });
   }
@@ -423,15 +452,18 @@ function manejadorGuardarTarea(
 
 function setearValoresForm(tipoAccion) {
   const divIdTarea = document.getElementById("idTarea");
-  if (divIdTarea !== null && tipoAccion == "Modificar") { 
+  if (divIdTarea !== null && tipoAccion == "Modificar") {
     document.getElementById("fechaInicio").value = divIdTarea.value.fechaInicio;
   }
 }
 
 function eliminarDiv(divIdTareaParam) {
-  if (divIdTareaParam !== null) {
-    divIdTareaParam.remove();
-  }
+  setTimeout(() => {
+    if (divIdTareaParam !== null) {
+      divIdTareaParam.remove();
+      window.location.reload(true);
+    }
+  }, 1000);
 }
 
 export default AgregarModificarTarea;

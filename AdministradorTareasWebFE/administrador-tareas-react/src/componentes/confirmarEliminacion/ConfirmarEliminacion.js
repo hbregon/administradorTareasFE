@@ -32,13 +32,7 @@ class ConfirmarEliminacion extends Component {
               >
                 Close
               </button>
-              <button
-                type="button"
-                class="btn btn-danger"
-                onClick={eliminarTareaPorId}
-              >
-                Eliminar
-              </button>
+              <button type="button" class="btn btn-danger" onClick={eliminarTareaPorId} >Eliminar</button>
             </div>
           </div>
         </div>

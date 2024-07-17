@@ -11,6 +11,7 @@ class EliminarTarea extends React.Component {
           class="btn btn-danger"
           data-bs-toggle="modal"
           data-bs-target="#ConfirmarEliminacionModal"
+          id="botonEliminar"
         >
           Eliminar Tarea
         </button>
